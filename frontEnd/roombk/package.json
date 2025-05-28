@@ -1,0 +1,30 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "start": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@fullcalendar/core": "^6.1.17",
+    "@fullcalendar/daygrid": "^6.1.17",
+    "@fullcalendar/interaction": "^6.1.17",
+    "@fullcalendar/resource-common": "^5.11.5",
+    "@fullcalendar/resource-timegrid": "^6.1.17",
+    "@fullcalendar/resource-timeline": "^6.1.17",
+    "@fullcalendar/timegrid": "^6.1.17",
+    "@fullcalendar/vue3": "^6.1.17",
+    "@nuxt/ui": "^3.1.2",
+    "@tailwindcss/vite": "^4.1.7",
+    "date-fns": "^4.1.0",
+    "nuxt": "^3.17.4",
+    "tailwindcss": "^4.1.7",
+    "vue": "^3.5.14",
+    "vue-router": "^4.5.1"
+  }
+}
