@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <FullCalendar :options="calendarOptions" />
 </template>
 
@@ -43,7 +43,7 @@ export default {
 };
 </script>
 
-<!-- <script setup>
+<script setup>
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -65,4 +65,3 @@ const calendarOptions = {
 </script> -->
 
 <style scoped></style>
-
