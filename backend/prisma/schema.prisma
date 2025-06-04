@@ -1,37 +1,61 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
-  id       Int      @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   email    String   @unique
-  name     String
+  firstName String
+  lastName  String
   password String
-  role     String   @default("user")
+  role     Role   @default(USER)
   bookings Booking[]
+  createdAt   DateTime  @default(now()) @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @db.Timestamptz
 }
 
 model Room {
   id       Int      @id @default(autoincrement())
-  name     String
+  Rname    String
+  type     String
   capacity Int
   bookings Booking[]
+  roomTypes RoomTypes @relation(fields: [roomTypesId], references: [id])
+  roomTypesId Int
+  createdAt   DateTime  @default(now()) @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @db.Timestamptz
+}
+
+model RoomTypes {
+  id       Int     @id @default(autoincrement())
+  capacity Int
+  name     String
+  rooms    Room[]
+  createdAt   DateTime  @default(now()) @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @db.Timestamptz
 }
 
 model Booking {
   id        Int      @id @default(autoincrement())
-  date      String
-  timeslotId Int
+  date      DateTime @db.Timestamptz
+  starttime DateTime @db.Timestamptz
+  endtime   DateTime @db.Timestamptz
   purpose   String?
   attendees Int
-  userId    Int
-  roomId    Int
+  userId    Int      // เปลี่ยนจาก String เป็น Int
+  roomId    Int      // เปลี่ยนจาก String เป็น Int
   user      User     @relation(fields: [userId], references: [id])
   room      Room     @relation(fields: [roomId], references: [id])
+  createdAt   DateTime  @default(now()) @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @db.Timestamptz
 }

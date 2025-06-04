@@ -19,6 +19,7 @@ const validateZod = (schema) => async (value, options) => {
 const getAllUsers = {
   description: 'Get list of all users',
   tags: ['api', 'user'],
+  auth: false,
   handler: async (request, h) => {
     try {
       const users = await userService.getAllUsers();
@@ -67,6 +68,7 @@ const createUser = {
     try {
       const newUser = await userService.createUser(request.payload);
       return h.response(newUser).code(201);
+      
     } catch (error) {
       console.error('Error creating user:', error);
       return h.response({ message: 'Failed to create user' }).code(500);
@@ -87,7 +89,6 @@ const updateUser = {
     const { id } = request.params;
     try {
       const updatedUser = await userService.updateUser(Number(id), request.payload);
-
       return h.response(updatedUser).code(200);
     } catch (error) {
       console.error('Error updating user:', error);
@@ -95,6 +96,28 @@ const updateUser = {
     }
   }
 };
+
+// const updateUser ={
+//   description: 'Update User by ID',
+//   tags:['api','user'],
+//   auth: false,
+//   validate: {
+//     params: validateZod(idParamSchema),
+//     payload: validateZod(updateUserSchema)
+//   },
+//   handler: async (request, h) => {
+//     const { id } = request.params
+//     try {
+//       const updateUser = userService.updateUser(Number(id), request.payload)
+//       return h.response(updateUser).code(201) 
+//     } catch (error) {
+//       console.error('Error updating user:', error);
+//       return h.response({ message: 'Failed to update user' }).code(500);
+//     }
+
+
+//   } 
+// }
 
 // Delete user
 const deleteUser = {
