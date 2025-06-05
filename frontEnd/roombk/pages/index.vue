@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <!-- MODIFIED: อัปเดตวันที่/เวลาให้เป็นค่าปัจจุบัน -->
     <div class="header-bar">
@@ -30,7 +31,7 @@
     <FullCalendar :options="calendarOptions" ref="calendar" />
 
     <UModal v-model:open="open">
-      <template #content>
+      <template #content> 
         <h2 id="modal-title" class="text-xl font-bold text-gray-800">
           📅 Booking Room
         </h2>
@@ -102,6 +103,9 @@ const calendar = ref(null);
 const selectedInfo = ref(null);
 const currentPage = ref(1); // Track the current page
 const roomsPerPage = 5; // Number of rooms to show per page
+
+const { data: data1 } = await useFetch('http://localhost:3001/users')
+
 
 const form = ref({
   room: '',

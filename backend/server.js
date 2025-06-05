@@ -3,13 +3,18 @@ const Hapi = require('@hapi/hapi');
 const { prismaPlugin } = require('./src/plugins/prisma');
 const routes = require('./src/routes');
 const { swaggerPlugin } = require('./src/plugins/swagger');
-// const { authPlugin } = require('./src/plugins/auth');
+const { authPlugin } = require('./src/plugins/auth');
 
 const init = async () => {
   const server = Hapi.server({
     port: process.env.PORT || 3001,
     host: 'localhost',
     routes: {
+    cors: {
+      origin: ['*'], // 👈 Allow all origins
+      additionalHeaders: ['cache-control', 'x-requested-with'],
+      credentials: true // optional: allow cookies/authorization headers
+    },
       validate: {
         failAction: async (request, h, err) => {
           throw err; // Show detailed validation errors during development
@@ -24,6 +29,8 @@ const init = async () => {
   await server.register(prismaPlugin);
   // Register the Prisma plugin to make it available in the server context
   await server.register(swaggerPlugin);
+  await server.register(authPlugin);
+
   // Register the Swagger plugin for API documentation
   // url: '/documentation',
   server.route(routes);

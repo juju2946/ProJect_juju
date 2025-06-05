@@ -77,47 +77,46 @@ const createUser = {
 };
 
 // Update user
-const updateUser = {
-  description: 'Update user by ID',
-  tags: ['api', 'user'],
-  auth: false,
-  validate: {
-    params: validateZod(idParamSchema),
-    payload: validateZod(updateUserSchema),
-  },
-  handler: async (request, h) => {
-    const { id } = request.params;
-    try {
-      const updatedUser = await userService.updateUser(Number(id), request.payload);
-      return h.response(updatedUser).code(200);
-    } catch (error) {
-      console.error('Error updating user:', error);
-      return h.response({ message: 'Failed to update user' }).code(500);
-    }
-  }
-};
-
-// const updateUser ={
-//   description: 'Update User by ID',
-//   tags:['api','user'],
+// const updateUser = {
+//   description: 'Update user by ID',
+//   tags: ['api', 'user'],
 //   auth: false,
 //   validate: {
 //     params: validateZod(idParamSchema),
-//     payload: validateZod(updateUserSchema)
+//     payload: validateZod(updateUserSchema),
 //   },
 //   handler: async (request, h) => {
-//     const { id } = request.params
+//     const { id } = request.params;
 //     try {
-//       const updateUser = userService.updateUser(Number(id), request.payload)
-//       return h.response(updateUser).code(201) 
+//       const updatedUser = await userService.updateUser(Number(id), request.payload);
+//       return h.response(updatedUser).code(200);
 //     } catch (error) {
 //       console.error('Error updating user:', error);
 //       return h.response({ message: 'Failed to update user' }).code(500);
 //     }
+//   }
+// };
 
-
-//   } 
-// }
+const updateUser ={
+  description: 'Update User by ID',
+  tags:['api','user'],
+  auth: false,
+  validate: {
+    params: validateZod(idParamSchema),
+    payload: validateZod(updateUserSchema)
+  },
+  handler: async (request, h) => {
+    const { id } = request.params
+    try {
+      const updateUser = userService.updateUser(Number(id), request.payload)
+      return h.response(updateUser).code(201) 
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return h.response({ message: 'Failed to update user' }).code(500);
+      //ถ้ามี Error จะแสดงข้อความ Failed to update user ตอบกลับมา
+    }
+  } 
+};
 
 // Delete user
 const deleteUser = {
