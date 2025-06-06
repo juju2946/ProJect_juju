@@ -1,6 +1,6 @@
 const { z } = require('zod');
 
-const {Role} = require('@prisma/client')
+const {Role} = require('@prisma/client');
 
 const createUserSchema = z.object({
   firstName: z.string().min(1, "firstName is required"),

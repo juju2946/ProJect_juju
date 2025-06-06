@@ -47,11 +47,10 @@ model RoomTypes {
 
 model Booking {
   id        Int      @id @default(autoincrement())
-  date      DateTime @db.Timestamptz
   starttime DateTime @db.Timestamptz
   endtime   DateTime @db.Timestamptz
-  purpose   String?
-  attendees Int
+  Name      String
+  detail    String?
   userId    Int      // เปลี่ยนจาก String เป็น Int
   roomId    Int      // เปลี่ยนจาก String เป็น Int
   user      User     @relation(fields: [userId], references: [id])
