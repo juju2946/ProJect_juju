@@ -1,4 +1,4 @@
-const roomtypesController = require("../controllers/roomtypes.controller")
+const roomtypesController = require("../controllers/roomtypes.controller");
 
 module.exports = [
     {

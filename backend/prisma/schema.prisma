@@ -27,7 +27,6 @@ model User {
 model Room {
   id       Int      @id @default(autoincrement())
   Rname    String
-  type     String
   capacity Int
   bookings Booking[]
   roomTypes RoomTypes @relation(fields: [roomTypesId], references: [id])

@@ -96,5 +96,5 @@ module.exports = {
     getRoomtypesById,
     createRoomtypes,
     updateRoomtypes,
-    deleteRoomtypes
+    deleteRoomtypes,
 };
