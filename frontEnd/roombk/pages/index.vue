@@ -1,6 +1,9 @@
 <template>
 
   <div>
+    <div v-for="product in data1">
+      <p>{{ product.firstName }}</p>
+    </div>
     <!-- MODIFIED: อัปเดตวันที่/เวลาให้เป็นค่าปัจจุบัน -->
     <div class="header-bar">
       <div class="date-nav flex items-center gap-4">
@@ -8,21 +11,11 @@
       </div>
       <!-- Added: Pagination navigation buttons -->
       <div class="pagination-nav flex items-center gap-2">
-        <UButton 
-          color="neutral" 
-          variant="outline" 
-          @click="prevPage" 
-          :disabled="currentPage === 1"
-        >
+        <UButton color="neutral" variant="outline" @click="prevPage" :disabled="currentPage === 1">
           Previous
         </UButton>
         <span class="text-gray-700">Page {{ currentPage }} of {{ totalPages }}</span>
-        <UButton 
-          color="neutral" 
-          variant="outline" 
-          @click="nextPage" 
-          :disabled="currentPage === totalPages"
-        >
+        <UButton color="neutral" variant="outline" @click="nextPage" :disabled="currentPage === totalPages">
           Next
         </UButton>
       </div>
@@ -31,51 +24,32 @@
     <FullCalendar :options="calendarOptions" ref="calendar" />
 
     <UModal v-model:open="open">
-      <template #content> 
+      <template #content>
         <h2 id="modal-title" class="text-xl font-bold text-gray-800">
           📅 Booking Room
         </h2>
-        <UForm :state="form" @submit.prevent="addEvent" class="space-y-4 flex flex-col items-center justify-center w-full">
+        <UForm :state="form" @submit.prevent="addEvent"
+          class="space-y-4 flex flex-col items-center justify-center w-full">
           <div class="w-full max-w-md space-y-4">
             <UFormField label="Room">
-              <UInput
-                v-model="form.room"
-                readonly
-                class="bg-gray-100 cursor-not-allowed w-full"
-              />
+              <UInput v-model="form.room" readonly class="bg-gray-100 cursor-not-allowed w-full" />
             </UFormField>
 
             <UFormField label="Name">
-              <UInput
-                v-model="form.name"
-                placeholder="Enter name"
-                class="focus:ring-2 focus:ring-green-400 w-full"
-              />
+              <UInput v-model="form.name" placeholder="Enter name" class="focus:ring-2 focus:ring-green-400 w-full" />
             </UFormField>
 
             <UFormField label="Start">
-              <UInput
-                v-model="form.start"
-                readonly
-                class="bg-gray-100 cursor-not-allowed w-full"
-              />
+              <UInput v-model="form.start" readonly class="bg-gray-100 cursor-not-allowed w-full" />
             </UFormField>
 
             <UFormField label="End">
-              <UInput
-                v-model="form.end"
-                readonly
-                class="bg-gray-100 cursor-not-allowed w-full"
-              />
+              <UInput v-model="form.end" readonly class="bg-gray-100 cursor-not-allowed w-full" />
             </UFormField>
 
             <UFormField label="Detail">
-              <UTextarea
-                v-model="form.detail"
-                :rows="3"
-                placeholder="Event description or extra info"
-                class="focus:ring-2 focus:ring-green-400 w-full"
-              />
+              <UTextarea v-model="form.detail" :rows="3" placeholder="Event description or extra info"
+                class="focus:ring-2 focus:ring-green-400 w-full" />
             </UFormField>
 
             <div class="flex justify-end gap-3 pt-4">
@@ -228,7 +202,7 @@ const calendarOptions = reactive({
     center: 'title',
     right: 'today,prev,next'
   },
-  resourceLabelContent: function(arg) {
+  resourceLabelContent: function (arg) {
     const imageMap = {
       a: '/images/room-a.jpg',
       b: '/images/room-b.jpg',
@@ -251,7 +225,7 @@ const calendarOptions = reactive({
       `
     };
   },
-  eventContent: function(arg) {
+  eventContent: function (arg) {
     return {
       html: `
         <div class="fc-event-title-container">
