@@ -1,9 +1,6 @@
 <template>
 
   <div>
-    <div v-for="product in data1">
-      <p>{{ product.firstName }}</p>
-    </div>
     <!-- MODIFIED: อัปเดตวันที่/เวลาให้เป็นค่าปัจจุบัน -->
     <div class="header-bar">
       <div class="date-nav flex items-center gap-4">

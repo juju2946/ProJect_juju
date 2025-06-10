@@ -1,17 +1,13 @@
 <script setup lang="ts">
+import { Body } from '#components'
 import type { TableColumn, DropdownMenuItem } from '@nuxt/ui'
 
-// ปรับปรุง interface User ให้ตรงกับข้อมูลจาก API
 interface User {
     id: number
-    firstName: string
-    lastName: string
+    name: string
     email: string
     role: string
     status: 'Active' | 'Inactive'
-    createdAt: string
-    updatedAt: string
-    password?: string // เพิ่ม optional password ถ้าไม่ต้องการแสดง
 }
 
 const toast = useToast()
@@ -19,35 +15,37 @@ const UBadge = resolveComponent('UBadge')
 const searchQuery = ref('')
 
 // ดึงข้อมูลจาก API และจัดการกรณีที่ data1 เป็น null
-const { data: data1, error, refresh } = await useFetch<User[]>('http://localhost:3001/users')
+const { data: data1, error } = await useFetch<User[]>('http://localhost:3001/users')
 
-// กรองข้อมูลตาม searchQuery โดยใช้ firstName และ lastName
+// กรองข้อมูลตาม searchQuery
 const filteredData = computed(() => {
     if (!data1.value) return []
     if (!searchQuery.value) return data1.value
     return data1.value.filter(user =>
-        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+        user.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         user.email.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
 })
 
 const columns: TableColumn<User>[] = [
     { accessorKey: 'id', header: 'ID' },
-    { accessorKey: 'firstName', header: 'First Name' }, // แสดง First Name
-    { accessorKey: 'lastName', header: 'Last Name' },   // เพิ่ม Last Name
+    { accessorKey: 'name', header: 'Name' },
     { accessorKey: 'email', header: 'Email' },
     { accessorKey: 'role', header: 'Role' },
-    {
-        accessorKey: 'createdAt',
-        header: 'Created At',
-        cell: ({ row }) => new Date(row.getValue('createdAt')).toLocaleDateString()
-    },
-    {
-        accessorKey: 'updatedAt',
-        header: 'Updated At',
-        cell: ({ row }) => new Date(row.getValue('updatedAt')).toLocaleDateString()
-    },
-    { id: 'action', header: '' } // คอลัมน์ Action สำหรับจุด 3 จุด
+    // {
+    //     accessorKey: 'status',
+    //     header: 'Status',
+    //     cell: ({ row }) => {
+    //         const color = {
+    //             Active: 'success' as const,
+    //             Inactive: 'error' as const,
+    //         }[row.getValue('status') as string]
+    //         return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
+    //             row.getValue('status')
+    //         )
+    //     }
+    // },
+    // { id: 'action' }
 ]
 
 function getDropdownActions(user: User): DropdownMenuItem[][] {
@@ -63,27 +61,8 @@ function getDropdownActions(user: User): DropdownMenuItem[][] {
             }
         ],
         [
-            { label: 'Edit', icon: 'i-lucide-edit', onSelect: () => { /* ใส่ logic Edit ตามต้องการ */ } },
-            {
-                label: 'Delete',
-                icon: 'i-lucide-trash',
-                color: 'error',
-                onSelect: async () => {
-                    if (confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}?`)) {
-                        try {
-                            await $fetch(`http://localhost:3001/users/${user.id}`, {
-                                method: 'DELETE'
-                            })
-                            // รีเฟรชข้อมูลหลังจากลบสำเร็จ
-                            await refresh()
-                            toast.add({ title: 'User deleted successfully!', color: 'success', icon: 'i-lucide-circle-check' })
-                        } catch (error) {
-                            console.error('Error deleting user:', error)
-                            toast.add({ title: 'Failed to delete user', color: 'error', icon: 'i-lucide-alert-triangle' })
-                        }
-                    }
-                }
-            }
+            { label: 'Edit', icon: 'i-lucide-edit' },
+            { label: 'Delete', icon: 'i-lucide-trash', color: 'error' }
         ]
     ]
 }
@@ -115,14 +94,10 @@ function getDropdownActions(user: User): DropdownMenuItem[][] {
         <UTable v-else :data="filteredData" :columns="columns" class="flex-1 mt-0 p-4">
             <template #name-cell="{ row }">
                 <div class="flex items-center gap-3">
-                    <!-- ตรวจสอบ id และใช้ fallback ถ้าโหลดภาพล้มเหลว -->
-                    <UAvatar :src="`https://i.pravatar.cc/120?img=${row.original.id || 1}`" size="lg"
-                        :alt="`${row.original.firstName} ${row.original.lastName} avatar`"
-                        @error="console.log('Image failed to load for ID:', row.original.id)" />
+                    <UAvatar :src="`https://i.pravatar.cc/120?img=${row.original.id}`" size="lg"
+                        :alt="`${row.original.name} avatar`" />
                     <div>
-                        <!-- แสดงแค่ First Name ในคอลัมน์ Name -->
-                        <p class="font-medium text-gray-800">{{ row.original.firstName }}</p>
-                        <!-- แสดงตำแหน่งหรือข้อมูลเพิ่มเติมถ้ามี (จาก API ไม่มีตำแหน่ง อาจต้องเพิ่มในอนาคต) -->
+                        <p class="font-medium text-highlighted">{{ row.original.firstName }}</p>
                     </div>
                 </div>
             </template>

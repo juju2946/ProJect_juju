@@ -124,6 +124,35 @@ const deleteUser = {
   }
 };
 
+//   Create pets
+const createPet = {
+    description: "Create new pet",
+    tags: ["api", "pets"],
+    auth: false,
+    plugins: {
+        'hapi-swagger': {
+            consumes: ['multipart/form-data'],
+        },
+    },
+    payload: {
+        maxBytes: 10 * 1024 * 1024, // จำกัดขนาดไฟล์ 10MB
+        parse: true,
+        output: 'file', // รับไฟล์
+        multipart: true, // เปิดใช้งาน multipart
+    },
+    handler: async (request, h) => {
+        try {
+            const { payload } = request;
+            const file = payload.image_file; // ชื่อ field ที่ส่งไฟล์
+            const newPet = await petService.createPet(payload, file);
+            return h.response(newPet).code(201);
+        } catch (error) {
+            console.error("Error creating pet:", error);
+            return h.response({ message: error.message || "Failed to create pet" }).code(500);
+        }
+    },
+};
+
 module.exports = {
   getAllUsers,
   getUserById,
