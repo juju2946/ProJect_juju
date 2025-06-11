@@ -3,7 +3,7 @@ const roomController = require("../controllers/room.controller");
 module.exports = [
   {
     method: "POST",
-    path: "/room/create",
+    path: "/room",
     options: roomController.createRoom,
   },
   {

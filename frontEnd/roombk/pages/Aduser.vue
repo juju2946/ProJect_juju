@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TableColumn, DropdownMenuItem } from '@nuxt/ui'
+import { useRouter } from 'vue-router' // Import router
 
 // ปรับปรุง interface User ให้ตรงกับข้อมูลจาก API
 interface User {
@@ -14,6 +15,7 @@ interface User {
     password?: string // เพิ่ม optional password ถ้าไม่ต้องการแสดง
 }
 
+const router = useRouter()
 const toast = useToast()
 const UBadge = resolveComponent('UBadge')
 const searchQuery = ref('')
@@ -63,7 +65,13 @@ function getDropdownActions(user: User): DropdownMenuItem[][] {
             }
         ],
         [
-            { label: 'Edit', icon: 'i-lucide-edit', onSelect: () => { /* ใส่ logic Edit ตามต้องการ */ } },
+            {
+                label: 'Edit',
+                icon: 'i-lucide-edit',
+                onSelect: () => {
+                    router.push(`/edit-user/${user.id}`) // นำทางไปหน้าแก้ไข
+                }
+            },
             {
                 label: 'Delete',
                 icon: 'i-lucide-trash',
@@ -74,7 +82,6 @@ function getDropdownActions(user: User): DropdownMenuItem[][] {
                             await $fetch(`http://localhost:3001/users/${user.id}`, {
                                 method: 'DELETE'
                             })
-                            // รีเฟรชข้อมูลหลังจากลบสำเร็จ
                             await refresh()
                             toast.add({ title: 'User deleted successfully!', color: 'success', icon: 'i-lucide-circle-check' })
                         } catch (error) {
@@ -115,14 +122,11 @@ function getDropdownActions(user: User): DropdownMenuItem[][] {
         <UTable v-else :data="filteredData" :columns="columns" class="flex-1 mt-0 p-4">
             <template #name-cell="{ row }">
                 <div class="flex items-center gap-3">
-                    <!-- ตรวจสอบ id และใช้ fallback ถ้าโหลดภาพล้มเหลว -->
                     <UAvatar :src="`https://i.pravatar.cc/120?img=${row.original.id || 1}`" size="lg"
                         :alt="`${row.original.firstName} ${row.original.lastName} avatar`"
                         @error="console.log('Image failed to load for ID:', row.original.id)" />
                     <div>
-                        <!-- แสดงแค่ First Name ในคอลัมน์ Name -->
                         <p class="font-medium text-gray-800">{{ row.original.firstName }}</p>
-                        <!-- แสดงตำแหน่งหรือข้อมูลเพิ่มเติมถ้ามี (จาก API ไม่มีตำแหน่ง อาจต้องเพิ่มในอนาคต) -->
                     </div>
                 </div>
             </template>

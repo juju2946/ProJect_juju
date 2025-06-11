@@ -3,7 +3,7 @@ const bookingController = require("../controllers/booking.controller")
 module.exports = [
     {
         method: 'POST',
-        path: '/booking/create',
+        path: '/booking',
         options: bookingController.createBooking
     },
     {
@@ -13,7 +13,7 @@ module.exports = [
     },
     {
         method: 'GET',
-        path: '/Allbooking/{id}',
+        path: '/bookings',
         options: bookingController.getAllBooking
     },
     {

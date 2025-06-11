@@ -29,9 +29,9 @@ model Room {
   id       Int      @id @default(autoincrement())
   Rname    String
   capacity Int
-  bookings Booking[]
   roomTypes RoomTypes @relation(fields: [roomTypesId], references: [id])
   roomTypesId Int
+  bookings    Booking[] //อ้างอิงกลับไปยัง Booking
   createdAt   DateTime  @default(now()) @db.Timestamptz
   updatedAt   DateTime  @updatedAt @db.Timestamptz
 }
@@ -51,8 +51,8 @@ model Booking {
   endtime   DateTime @db.Timestamptz
   Name      String
   detail    String?
-  userId    Int      // เปลี่ยนจาก String เป็น Int
-  roomId    Int      // เปลี่ยนจาก String เป็น Int
+  userId    Int      
+  roomId    Int      
   user      User     @relation(fields: [userId], references: [id])
   room      Room     @relation(fields: [roomId], references: [id])
   createdAt   DateTime  @default(now()) @db.Timestamptz

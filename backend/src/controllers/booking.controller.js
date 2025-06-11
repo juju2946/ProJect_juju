@@ -1,33 +1,34 @@
 const { z } = require("zod");
-const {createBookingSchema, updateBookingSchema} = require("../validations/booking.validation")
+const { createBookingSchema, updateBookingSchema } = require("../validations/booking.validation");
 const idParamSchema = z.object({
   id: z.string().regex(/^\d+$/, "Invalid ID format"),
 });
-const bookingService = require('../services/booking.servince');
+const bookingService = require('../services/booking.service');
+
 const validateZod = (schema) => async (value, options) => {
   try {
-    await schema.parseAsync(value); // Validate with Zod
+    await schema.parseAsync(value);
   } catch (err) {
-    throw new Error(
-      `Validation error: ${err.errors.map((e) => e.message).join(", ")}`
-    );
+    throw new Error(`Validation error: ${err.errors.map((e) => e.message).join(", ")}`);
   }
 };
-// Get All Boooikng
+
+// Get All Booking
 const getAllBooking = {
   description: "Get list of all Bookings",
   tags: ["api", "booking"],
   auth: false,
   handler: async (request, h) => {
     try {
-      const booking = await bookingService.getAllBooking();
-      return h.response(booking).code(200);
+      const bookings = await bookingService.getAllBooking();
+      return h.response(bookings).code(200);
     } catch (error) {
       console.error("Error fetching Booking:", error);
       return h.response({ message: "Failed to fetch Booking" }).code(500);
     }
   },
 };
+
 // Get Booking By ID
 const getBookingById = {
   description: "Get Booking by ID",
@@ -41,7 +42,7 @@ const getBookingById = {
     try {
       const booking = await bookingService.getBookingById(Number(id));
       if (!booking) {
-        return h.response({ message: "Booikng not found" }).code(404);
+        return h.response({ message: "Booking not found" }).code(404);
       }
       return h.response(booking).code(200);
     } catch (error) {
@@ -51,7 +52,7 @@ const getBookingById = {
   },
 };
 
-//Create Booking
+// Create Booking
 const createBooking = {
   description: "Create new Booking",
   tags: ["api", "booking"],
@@ -65,12 +66,12 @@ const createBooking = {
       return h.response(newBooking).code(201);
     } catch (error) {
       console.error("Error creating booking", error);
-      return h.response({ message: "Failed to create booking" }).code(500);
+      return h.response({ message: error.message || "Failed to create booking" }).code(500);
     }
   },
 };
 
-//Update Booking
+// Update Booking
 const updateBooking = {
   description: "Update Booking by ID",
   tags: ["api", "booking"],
@@ -82,9 +83,8 @@ const updateBooking = {
   handler: async (request, h) => {
     const { id } = request.params;
     try {
-      const updateBooking = await bookingService.updateBooking(Number(id), request.payload);
-      return h.response(updateBooking).code(201);
-
+      const updatedBooking = await bookingService.updateBooking(Number(id), request.payload);
+      return h.response(updatedBooking).code(200); // เปลี่ยน code เป็น 200 สำหรับ update
     } catch (error) {
       console.error("Error updating booking:", error);
       return h.response({ message: "Failed to update booking" }).code(500);
@@ -92,9 +92,9 @@ const updateBooking = {
   },
 };
 
-//Delete Booking
+// Delete Booking
 const deleteBooking = {
-    description: "Delete Booking by ID",
+  description: "Delete Booking by ID",
   tags: ["api", "booking"],
   auth: false,
   validate: {
@@ -103,24 +103,24 @@ const deleteBooking = {
   handler: async (request, h) => {
     const { id } = request.params;
     try {
-        const booking = await bookingService.getBookingById(Number(id));
-        if (!booking) {
-            return h.response({ message: 'booking not found' }).code(404);
-        }
+      const booking = await bookingService.getBookingById(Number(id));
+      if (!booking) {
+        return h.response({ message: 'Booking not found' }).code(404);
+      }
 
-        await bookingService.deleteBooking(Number(id));
-        return h.response({ message: 'Booking delete Successfully' }).code(200);
+      await bookingService.deleteBooking(Number(id));
+      return h.response({ message: 'Booking deleted successfully' }).code(200);
     } catch (error) {
-        console.error('Error deleting booking:', error);
-        return h.response({ message: 'Failed to delete booking' }).code(500);
+      console.error('Error deleting booking:', error);
+      return h.response({ message: 'Failed to delete booking' }).code(500);
     }
   }
 };
 
 module.exports = {
-    getAllBooking,
-    getBookingById,
-    createBooking,
-    updateBooking,
-    deleteBooking
+  getAllBooking,
+  getBookingById,
+  createBooking,
+  updateBooking,
+  deleteBooking
 };

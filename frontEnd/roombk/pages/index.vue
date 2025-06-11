@@ -1,10 +1,9 @@
 <template>
-
   <div>
     <!-- MODIFIED: อัปเดตวันที่/เวลาให้เป็นค่าปัจจุบัน -->
     <div class="header-bar">
       <div class="date-nav flex items-center gap-4">
-        <span class="text-gray-700 font-medium">Wed, 04 Jun 2025</span>
+        <span class="text-gray-700 font-medium">{{ currentDateTime }}</span>
       </div>
       <!-- Added: Pagination navigation buttons -->
       <div class="pagination-nav flex items-center gap-2">
@@ -68,15 +67,15 @@
 import FullCalendar from '@fullcalendar/vue3';
 import interactionPlugin from '@fullcalendar/interaction';
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid';
+import { ref, computed, reactive, onMounted, watch } from 'vue';
 
 const open = ref(false);
 const calendar = ref(null);
 const selectedInfo = ref(null);
-const currentPage = ref(1); // Track the current page
-const roomsPerPage = 5; // Number of rooms to show per page
+const currentPage = ref(1);
+const roomsPerPage = 5;
 
-const { data: data1 } = await useFetch('http://localhost:3001/users')
-
+const { data: data1 } = await useFetch('http://localhost:3001/users');
 
 const form = ref({
   room: '',
@@ -88,7 +87,7 @@ const form = ref({
 
 const events = ref([]);
 
-// Full list of rooms (you can add more rooms here)
+// Full list of rooms
 const allResources = ref([
   { id: 'a', title: 'Room A' },
   { id: 'b', title: 'Room B' },
@@ -102,10 +101,10 @@ const allResources = ref([
   { id: 'j', title: 'Room J' }
 ]);
 
-// Calculate total pages based on the number of rooms
+// Calculate total pages
 const totalPages = computed(() => Math.ceil(allResources.value.length / roomsPerPage));
 
-// Compute the resources to display based on the current page
+// Compute displayed resources
 const displayedResources = computed(() => {
   const startIndex = (currentPage.value - 1) * roomsPerPage;
   const endIndex = startIndex + roomsPerPage;
@@ -114,34 +113,67 @@ const displayedResources = computed(() => {
 
 // Navigation functions
 const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--;
-  }
+  if (currentPage.value > 1) currentPage.value--;
 };
 
 const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
-  }
+  if (currentPage.value < totalPages.value) currentPage.value++;
 };
 
-// ฟังก์ชันจัดการเมื่อลากเลือก
+// Get current date and time
+const currentDateTime = computed(() => {
+  const now = new Date();
+  return now.toLocaleString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
+});
+
+// Get current hour for validation
+const currentHour = computed(() => {
+  const now = new Date();
+  return now.getHours();
+});
+
+// Handle select event with hourly validation
 const handleSelect = (info) => {
+  const now = new Date();
+  const start = new Date(info.startStr);
+  const end = new Date(info.endStr);
+  const startHour = start.getHours();
+  const endHour = end.getHours();
+
+  // Check if the selected hour has passed
+  if (startHour < currentHour.value || (startHour === currentHour.value && start > now)) {
+    alert(`Cannot book for past hours. The current time is ${currentHour.value}:00. Please select a future hour.`);
+    return;
+  }
+
   selectedInfo.value = info;
   form.value.room = info.resource?.title || '';
   form.value.start = info.startStr;
   form.value.end = info.endStr;
   form.value.name = '';
   form.value.detail = '';
-  open.value = true; // เปิด Modal เมื่อลากเลือก
+  open.value = true;
 };
 
-// ฟังก์ชันเพิ่ม event
+// Add event with validation
 const addEvent = () => {
   if (!form.value.name) {
     alert('Please enter a name.');
     return;
   }
+
+  const now = new Date();
+  const start = new Date(form.value.start);
+  const end = new Date(form.value.end);
+  const startHour = start.getHours();
+  const endHour = end.getHours();
+
+  // Check if the selected hour has passed
+  if (startHour < currentHour.value || (startHour === currentHour.value && start > now)) {
+    alert(`Cannot book for past hours. The current time is ${currentHour.value}:00. Please select a future hour.`);
+    return;
+  }
+
   const newEvent = {
     id: Date.now().toString(),
     title: form.value.name,
@@ -153,13 +185,14 @@ const addEvent = () => {
     },
     color: '#22c55e'
   };
+
   const calendarApi = calendar.value.getApi();
   calendarApi.addEvent(newEvent);
   events.value.push(newEvent);
-  closeModal(); // ปิด Modal หลังเพิ่ม event
+  closeModal();
 };
 
-// ฟังก์ชันปิด Modal
+// Close modal
 const closeModal = () => {
   open.value = false;
   form.value = { room: '', name: '', start: '', end: '', detail: '' };
@@ -190,8 +223,8 @@ const calendarOptions = reactive({
   initialView: 'resourceTimeGridDay',
   selectable: true,
   allDaySlot: false,
-  slotMinTime: '09:00:00',
-  slotMaxTime: '20:00:00',
+  slotMinTime: '09:00:00', // Fixed start time
+  slotMaxTime: '20:00:00', // Fixed end time
   height: 'auto',
   select: handleSelect,
   headerToolbar: {
@@ -233,7 +266,7 @@ const calendarOptions = reactive({
     };
   },
   events: computed(() => events.value),
-  resources: computed(() => displayedResources.value) // Dynamically update resources based on the current page
+  resources: computed(() => displayedResources.value)
 });
 </script>
 
